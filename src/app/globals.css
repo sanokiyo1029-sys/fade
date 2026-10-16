@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────────────────────
+   FADE — design tokens
+   Monochrome. One signal colour, reserved for system state only
+   (LIVE · ONLINE · ERROR · IMPORTANT).
+   ────────────────────────────────────────────────────────────── */
+:root {
+  --bg: #ffffff;
+  --fg: #000000;
+  --soft: #f5f5f5;
+  --line: #d9d9d9;
+  --mute: #6b6b6b; /* AA-safe muted text */
+  --faint: #8a8a8a; /* decorative: ticks, placeholders, disabled */
+  --surface: #1a1a1a;
+  --signal: #e8262a;
+  --header-h: 56px;
+  --nav-h: 56px;
+}
+
+/* Inverted zone — any subtree re-maps the semantic tokens. */
+.dark-zone {
+  --bg: #000000;
+  --fg: #ffffff;
+  --soft: #141414;
+  --line: #2b2b2b;
+  --mute: #8a8a8a;
+  --faint: #5a5a5a;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-soft: var(--soft);
+  --color-line: var(--line);
+  --color-mute: var(--mute);
+  --color-faint: var(--faint);
+  --color-surface: var(--surface);
+  --color-signal: var(--signal);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --ease-mech: cubic-bezier(0.2, 0, 0, 1);
+
+  --animate-marquee: marquee 60s linear infinite;
+  --animate-blink: blink 1.1s steps(2, jump-none) infinite;
+  --animate-halo: halo 2.4s var(--ease-mech) infinite;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  /* `backwards`, not `both`: a filled transform would trap position:fixed children */
+  --animate-rise: rise 0.5s var(--ease-mech) backwards;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+@keyframes halo {
+  0% { transform: scale(1); opacity: 0.45; }
+  100% { transform: scale(3); opacity: 0; }
+}
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+  html {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--fg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: calc(var(--header-h) + 56px);
+    scrollbar-gutter: stable;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 15px;
+    line-height: 1.55;
+    min-height: 100svh;
+  }
+  ::selection {
+    background: #000;
+    color: #fff;
+  }
+  .dark-zone ::selection {
+    background: #fff;
+    color: #000;
+  }
+  :focus-visible {
+    outline: 1px solid var(--fg);
+    outline-offset: 3px;
+  }
+  button, a, input, select, textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+  input::placeholder, textarea::placeholder {
+    color: var(--faint);
+  }
+  h1, h2, h3, h4 {
+    letter-spacing: -0.03em;
+    line-height: 1.04;
+    font-weight: 500;
+  }
+  /* thin, quiet scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+  }
+}
+
+/* ── Utilities ───────────────────────────────────────────────── */
+@utility shell {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: 16px;
+  @media (min-width: 768px) { padding-inline: 32px; }
+  @media (min-width: 1280px) { padding-inline: 40px; }
+}
+
+/* uppercase mono micro-label */
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  line-height: 1.2;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+@utility label-fg {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  line-height: 1.2;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+@utility mono {
+  font-family: var(--font-mono);
+  letter-spacing: -0.01em;
+}
+@utility num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+@utility display {
+  letter-spacing: -0.055em;
+  line-height: 0.92;
+  font-weight: 500;
+}
+@utility hairline {
+  border-color: var(--line);
+}
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* blueprint grid backdrop */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+.bg-grid-fine {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--line) 55%, transparent) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+.bg-dots {
+  background-image: radial-gradient(circle, var(--faint) 0.8px, transparent 1.2px);
+  background-size: 12px 12px;
+}
+/* ruler along an edge */
+.ruler-y {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--faint) 0,
+    var(--faint) 1px,
+    transparent 1px,
+    transparent 8px
+  );
+}
+.ruler-x {
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--faint) 0,
+    var(--faint) 1px,
+    transparent 1px,
+    transparent 8px
+  );
+}
+
+/* skeleton */
+.skeleton {
+  background: linear-gradient(
+    100deg,
+    var(--soft) 30%,
+    color-mix(in oklab, var(--line) 60%, var(--soft)) 50%,
+    var(--soft) 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* range input fallback + number input chrome removal */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* hide the marquee on reduced motion; calm everything */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
